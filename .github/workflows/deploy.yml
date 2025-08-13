@@ -31,9 +31,7 @@ jobs:
             git pull origin main
 
             # escreve .env.prod a partir de secrets
-            cat > .env.prod <<'EOF'
-${{ secrets.ENV_PROD }}
-EOF
+            echo "${{ secrets.ENV_PROD }}" > .env.prod
 
             docker compose -f docker-compose.prod.yml up -d --build
 
