@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: ./docker/local
+    container_name: hdt-app-local
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      PHP_MEMORY_LIMIT: 512M
+      PHP_UPLOAD_MAX_FILESIZE: 20M
+      PHP_POST_MAX_SIZE: 20M
+    depends_on:
+      - mysql
+    networks:
+      - hdt-net
+
+  mysql:
+    image: mysql:8.0
+    container_name: hdt-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hora_tesoura
+      MYSQL_USER: hdt
+      MYSQL_PASSWORD: hdt
+    ports:
+      - "3307:3306"   # acessível no host em 3307
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - hdt-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: hdt-nginx-local
+    ports:
+      - "8080:80"  # http://localhost:8080
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/local/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - hdt-net
+
+networks:
+  hdt-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
