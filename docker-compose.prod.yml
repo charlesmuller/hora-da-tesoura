@@ -7,6 +7,8 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./src:/var/www/html
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
     env_file:
       - .env.prod   # gerado a partir de secrets na VPS
     networks:
@@ -29,3 +31,7 @@ services:
 networks:
   hdt-net:
     driver: bridge
+
+volumes:
+  vendor:
+  node_modules:
