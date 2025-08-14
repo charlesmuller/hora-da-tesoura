@@ -35,12 +35,6 @@ jobs:
 
             docker-compose -f docker-compose.prod.yml up -d --build
 
-            # injeta .env dentro do container
-            docker exec hdt-app-prod bash -lc "\
-              cat > /var/www/html/.env <<'EOF'
-            $(cat .env.prod)
-            EOF
-            "
             # Instala dependências e prepara app (executa DENTRO do container app)
             docker exec hdt-app-prod bash -lc "\
               cd /var/www/html && \
