@@ -33,7 +33,7 @@ jobs:
             # escreve .env.prod a partir de secrets
             echo "${{ secrets.ENV_PROD }}" > .env.prod
 
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker-compose -f docker-compose.prod.yml up -d --build
 
             # Instala dependências e prepara app (executa DENTRO do container app)
             docker exec hdt-app-prod bash -lc "\
