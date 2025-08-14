@@ -17,7 +17,7 @@ services:
     container_name: hdt-nginx-prod
     restart: always
     ports:
-      - "80:80"
+      - "8081:80"
     volumes:
       - ./src:/var/www/html
       - ./docker/prod/nginx.conf:/etc/nginx/conf.d/default.conf:ro
