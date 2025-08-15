@@ -32,8 +32,19 @@ jobs:
 
             # escreve .env.prod a partir de secrets
             echo "${{ secrets.ENV_PROD }}" > .env.prod
-
+            
+            # Verifica se APP_KEY existe no ENV_PROD, se não, gera uma
+            if ! grep -q "^APP_KEY=base64:" .env.prod; then
+              echo "APP_KEY vazia ou inválida no ENV_PROD. Gerando nova chave..."
+              NEW_KEY="base64:$(openssl rand -base64 32)"
+              sed -i "s/^APP_KEY=.*/APP_KEY=$NEW_KEY/" .env.prod
+              echo "Nova APP_KEY gerada e configurada no .env.prod"
+            fi
+            
             docker-compose -f docker-compose.prod.yml up -d --build
+
+            # Aguarda container inicializar
+            sleep 10
 
             # Instala dependências e prepara app (executa DENTRO do container app)
             docker exec hdt-app-prod bash -lc "\
@@ -41,7 +52,6 @@ jobs:
               composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev && \
               chown -R www-data:www-data storage bootstrap/cache && \
               chmod -R 775 storage bootstrap/cache && \
-              php artisan key:generate --force && \
               php artisan storage:link || true && \
               php artisan config:cache && php artisan route:cache && php artisan view:cache && \
               php artisan optimize:clear \
